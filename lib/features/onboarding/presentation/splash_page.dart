@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topik_go/app/theme/app_colors.dart';
+import 'package:topik_go/core/constants/prefs_keys.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -13,10 +15,16 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future<void>.delayed(const Duration(milliseconds: 1300), () {
-      if (!mounted) return;
-      context.go('/ai-notice');
-    });
+    _bootstrapRoute();
+  }
+
+  Future<void> _bootstrapRoute() async {
+    await Future<void>.delayed(const Duration(milliseconds: 1300));
+    final prefs = await SharedPreferences.getInstance();
+    final completed = prefs.getBool(PrefsKeys.onboardingCompleted) ?? false;
+
+    if (!mounted) return;
+    context.go(completed ? '/auth/login' : '/ai-notice');
   }
 
   @override

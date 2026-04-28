@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:topik_go/app/theme/app_colors.dart';
+import 'package:topik_go/core/constants/prefs_keys.dart';
 
 class GoalLevelPage extends StatefulWidget {
   const GoalLevelPage({super.key});
@@ -18,6 +20,32 @@ class _GoalLevelPageState extends State<GoalLevelPage> {
     5: '중상급 / 전문 분야 취업 가능 요건',
     6: '고급 / 대학원, 전문 직종 취업 등 가능 요건',
   };
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLevel();
+  }
+
+  Future<void> _loadSavedLevel() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLevel = prefs.getInt(PrefsKeys.targetTopikLevel);
+
+    if (!mounted || savedLevel == null || savedLevel < 3 || savedLevel > 6) {
+      return;
+    }
+
+    setState(() => selectedLevel = savedLevel);
+  }
+
+  Future<void> _saveGoalAndContinue() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(PrefsKeys.targetTopikLevel, selectedLevel);
+    await prefs.setBool(PrefsKeys.onboardingCompleted, true);
+
+    if (!mounted) return;
+    context.go('/auth/login');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +90,7 @@ class _GoalLevelPageState extends State<GoalLevelPage> {
             }),
             const Spacer(),
             FilledButton(
-              onPressed: () => context.go('/auth/login'),
+              onPressed: _saveGoalAndContinue,
               child: const Text('Next Step'),
             ),
             const SizedBox(height: 16),
