@@ -41,7 +41,11 @@ class PracticePage extends ConsumerWidget {
             subtitle: '저장한 문제를 다시 풀어보세요',
             onTap: () => context.push('/bookmarks/questions'),
           ),
-          const _MenuTile(title: '문제 해설 영상', subtitle: '문제 해설 영상을 열람해보세요'),
+          _MenuTile(
+            title: '문제 해설 영상',
+            subtitle: '문제 해설 영상을 열람해보세요',
+            onTap: () => context.push('/explanation-videos'),
+          ),
           _MenuTile(
             title: '단어장',
             subtitle: 'TOPIK 단어를 검색하고 저장하세요',
